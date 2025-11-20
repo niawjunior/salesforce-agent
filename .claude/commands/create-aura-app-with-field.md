@@ -1,7 +1,15 @@
 # Create Aura Application with Field Display
 
+## Quick Reference - Placeholder Replacements
+Before using this template, identify your values:
+- **AppName**: Your application name (e.g., `LeadStatusDisplay`, `AccountTypeDisplay`)
+- **FieldName**: Your field name exactly as in Salesforce (e.g., `Status`, `Type`, `Color__c`)
+- **FieldNameLower**: Field name in lowercase (e.g., `status`, `type`, `color`)
+- **FieldLabel**: User-friendly field label (e.g., `Status`, `Type`, `Color`)
+- **ObjectName**: Object name (e.g., `Lead`, `Account`, `Opportunity`)
+
 ## Overview
-This instruction defines the process for creating a new Aura application in Salesforce that displays a specified field (text or picklist) from any object.
+This instruction defines the process for creating a new Aura application in Salesforce that displays a specified picklist field from any object.
 
 ## Requirements
 1. Create a new Aura application using Salesforce CLI
@@ -40,37 +48,75 @@ This will create the following files:
 
 ### Step 2: Configure the Application Markup ({AppName}.app)
 
+Replace all placeholders with your specific values:
+- `{AppName}` → Your application name (e.g., `StatusPicklistDisplay`)
+- `{FieldName}` → Your field name (e.g., `Status`, `Priority`, `Color__c`)
+- `{FieldNameLower}` → Field name in lowercase (e.g., `status`, `priority`, `color`)
+- `{FieldLabel}` → User-friendly field label (e.g., `Status`, `Priority`, `Color`)
+- `{ObjectName}` → Object name (e.g., `Lead`, `Account`, `Opportunity`)
+
 ```xml
-<aura:application extends="force:slds" controller="{!v.controller}">
-    <aura:attribute name="picklistOptions" type="String[]" />
-    <aura:attribute name="selectedColor" type="String" />
-    
+<aura:application extends="force:slds" controller="{AppName}Controller">
+    <aura:attribute name="{fieldNameLower}Options" type="String[]" />
+    <aura:attribute name="selected{FieldName}" type="String" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="infoMessage" type="String" />
+
     <!-- Initialize the component -->
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
-    
+
     <div class="slds-box slds-theme_default">
-        <h2 class="slds-text-heading_small slds-m-bottom_medium">Color Picker</h2>
-        
-        <!-- Color Selection Section -->
+        <h2 class="slds-text-heading_small slds-m-bottom_medium">{FieldLabel} Selector</h2>
+
+        <!-- Info Message Display -->
+        <div aura:if="{!v.infoMessage}" class="slds-notify slds-notify_alert slds-theme_alert-texture slds-m-bottom_medium" role="alert">
+            <span class="slds-assistive-text">info</span>
+            <span class="slds-icon_container slds-m-right_x-small">
+                <lightning:icon iconName="utility:info" size="x-small" alternativeText="info"/>
+            </span>
+            {!v.infoMessage}
+        </div>
+
+        <!-- Error Message Display -->
+        <div aura:if="{!v.errorMessage}" class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning slds-m-bottom_medium" role="alert">
+            <span class="slds-assistive-text">error</span>
+            <span class="slds-icon_container slds-m-right_x-small">
+                <lightning:icon iconName="utility:error" size="x-small" alternativeText="error"/>
+            </span>
+            {!v.errorMessage}
+        </div>
+
+        <!-- {FieldLabel} Selection Section -->
         <div class="slds-section slds-is-open">
             <h3 class="slds-section__title slds-theme_shade">
-                <span class="slds-truncate slds-p-horizontal_small" title="Select Color">Select Color</span>
+                <span class="slds-truncate slds-p-horizontal_small" title="Select {FieldLabel}">Select {FieldLabel}</span>
             </h3>
             <div class="slds-section__content">
-                <div class="color-picker">
-                    <aura:iteration items="{!v.picklistOptions}" var="color">
-                        <button class="{!'slds-button slds-button_neutral color-btn ' + (v.selectedColor == color ? 'selected' : '')}"
-                                onclick="{!c.selectColor}"
-                                data-color="{!color}">
-                            <span class="{!'color-indicator ' + color}"></span>
-                            {!color}
-                        </button>
-                    </aura:iteration>
+                <div aura:if="{!v.{fieldNameLower}Options.length > 0}">
+                    <div class="{fieldNameLower}-picker">
+                        <aura:iteration items="{!v.{fieldNameLower}Options}" var="{fieldNameLower}">
+                            <button class="{!'slds-button slds-button_neutral {fieldNameLower}-btn ' + (v.selected{FieldName} == {fieldNameLower} ? 'selected' : '')}"
+                                    onclick="{!c.select{FieldName}}"
+                                    data-{fieldNameLower}="{!{fieldNameLower}}">
+                                {!{fieldNameLower}}
+                            </button>
+                        </aura:iteration>
+                    </div>
+
+                    <!-- Selected {FieldLabel} Display -->
+                    <div aura:if="{!v.selected{FieldName}}" class="slds-m-top_medium">
+                        <p class="slds-text-heading_small">Selected: {!v.selected{FieldName}}</p>
+                    </div>
                 </div>
                 
-                <!-- Selected Color Display -->
-                <div aura:if="{!v.selectedColor}" class="slds-m-top_medium">
-                    <p class="slds-text-heading_small">Selected Color: {!v.selectedColor}</p>
+                <!-- No options available message -->
+                <div aura:if="{!v.{fieldNameLower}Options.length == 0}" class="slds-text-body_regular slds-text-color_weak">
+                    No options are available. This could mean:
+                    <ul class="slds-list_dotted">
+                        <li>The {FieldName} field doesn't exist on the {ObjectName} object</li>
+                        <li>You don't have permission to access this field</li>
+                        <li>The field is not a picklist type</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -78,39 +124,52 @@ This will create the following files:
 </aura:application>
 ```
 
-Replace `{FieldName}` with the actual picklist field name you want to display (e.g., `Status__c`).
+### Step 3: Update the Controller ({AppName}Controller.js)
 
-#### Update the Controller ({AppName}Controller.js)
-Add the following JavaScript to the controller file:
+Replace all placeholders with your specific values:
+- `{FieldName}` → Your field name (e.g., `Status`, `Priority`, `Color__c`)
+- `{FieldNameWithoutCustom}` → Field name without `__c` for custom fields (e.g., `Status`, `Priority`, `Color`)
+- `{FieldNameLower}` → Field name in lowercase (e.g., `status`, `priority`, `color`)
+- `{FieldLabel}` → User-friendly field label (e.g., `Status`, `Priority`, `Color`)
+
+**IMPORTANT**: For custom fields ending with `__c`, use `{FieldNameWithoutCustom}` in the Apex method call and JavaScript function names (remove the `__c` suffix).
 
 ```javascript
 ({
     doInit : function(component, event, helper) {
-        // Simple approach - direct Apex call
-        var action = component.get("c.getColorPicklistValues");
-        
+        // Call Apex method to get {FieldLabel} picklist values
+        var action = component.get("c.get{FieldNameWithoutCustom}PicklistValues");
+
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === "SUCCESS") {
-                component.set("v.picklistOptions", response.getReturnValue());
+                component.set("v.{fieldNameLower}Options", response.getReturnValue());
+                component.set("v.infoMessage", "Successfully loaded {FieldLabel} options.");
             } else if (state === "ERROR") {
-                console.error("Error fetching color picklist values:", response.getError());
+                var errors = response.getError();
+                if (errors && errors[0] && errors[0].message) {
+                    console.error("Error:", errors[0].message);
+                    component.set("v.errorMessage", errors[0].message);
+                } else {
+                    console.error("Error fetching {FieldLabel} picklist values:", errors);
+                    component.set("v.errorMessage", "Unknown error occurred while fetching options.");
+                }
             }
         });
-        
+
         $A.enqueueAction(action);
     },
-    
-    selectColor : function(component, event, helper) {
-        // Get the color from the button's data attribute
+
+    select{FieldNameWithoutCustom} : function(component, event, helper) {
+        // Get the {fieldNameLower} from the button's data attribute
         var button = event.currentTarget;
-        var color = button.getAttribute("data-color");
-        component.set("v.selectedColor", color);
+        var {fieldNameLower} = button.getAttribute("data-{fieldNameLower}");
+        component.set("v.selected{FieldName}", {fieldNameLower});
     }
 })
 ```
 
-#### Update the Helper ({AppName}Helper.js)
+### Step 4: Update the Helper ({AppName}Helper.js)
 Add the following JavaScript to the helper file:
 
 ```javascript
@@ -120,7 +179,7 @@ Add the following JavaScript to the helper file:
 })
 ```
 
-#### Update the CSS ({AppName}.css)
+### Step 5: Update the CSS ({AppName}.css)
 Add the following CSS for styling:
 
 ```css
@@ -136,21 +195,29 @@ Add the following CSS for styling:
 }
 ```
 
-### Step 3: Create an Apex Controller (Required for Functionality)
+### Step 6: Create an Apex Controller (Required for Functionality)
 Create an Apex class to fetch picklist values:
 
 1. Create file: `force-app/main/default/classes/{AppName}Controller.cls`
 2. Content:
+
+Replace all placeholders with your specific values:
+- `{AppName}` → Your application name (e.g., `StatusPicklistDisplay`)
+- `{FieldName}` → Your field name (e.g., `Status`, `Priority`, `Color__c`)
+- `{FieldNameWithoutCustom}` → Field name without `__c` for custom fields (e.g., `Status`, `Priority`, `Color`)
+- `{FieldLabel}` → User-friendly field label (e.g., `Status`, `Priority`, `Color`)
+- `{ObjectName}` → Object name (e.g., `Lead`, `Account`, `Opportunity`)
+
+**IMPORTANT**: For custom fields ending with `__c`, use `{FieldNameWithoutCustom}` in the Apex method name (remove the `__c` suffix).
+
 ```apex
 public with sharing class {AppName}Controller {
-    
+
     @AuraEnabled
-    public static List<String> getColorPicklistValues() {
+    public static List<String> get{FieldNameWithoutCustom}PicklistValues() {
         try {
-            // Replace 'ObjectName.FieldName' with your actual object and field
-            // Example: Schema.DescribeFieldResult fieldResult = Lead.Status.getDescribe();
-            // Example: Schema.DescribeFieldResult fieldResult = Account.Type.getDescribe();
-            Schema.DescribeFieldResult fieldResult = ObjectName.FieldName.getDescribe();
+            // Get the {ObjectName}.{FieldName} field describe result
+            Schema.DescribeFieldResult fieldResult = {ObjectName}.{FieldName}.getDescribe();
             List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
             List<String> options = new List<String>();
 
@@ -162,7 +229,7 @@ public with sharing class {AppName}Controller {
 
             return options;
         } catch (Exception e) {
-            throw new AuraHandledException('Error fetching picklist values: ' + e.getMessage());
+            throw new AuraHandledException('Error fetching {FieldLabel} picklist values: ' + e.getMessage());
         }
     }
 }
@@ -178,9 +245,7 @@ public with sharing class {AppName}Controller {
 </ApexClass>
 ```
 
-Replace `{AppName}` with the actual name of your application.
-
-### Step 4: Update the Application Metadata ({AppName}.app-meta.xml)
+### Step 7: Update the Application Metadata ({AppName}.app-meta.xml)
 Ensure the metadata file contains:
 
 ```xml
@@ -193,68 +258,98 @@ Ensure the metadata file contains:
 
 ## Usage Example
 
-### Create a new Aura app named "ColorPicklistDisplay"
+### Example 1: Create a Lead Status Picklist Display App
 ```bash
-sf lightning generate app --name ColorPicklistDisplay --output-dir force-app/main/default/aura
+sf lightning generate app --name LeadStatusDisplay --output-dir force-app/main/default/aura
 ```
 
-### Complete Working Implementation for Color Field Display
-1. Edit `force-app/main/default/aura/ColorPicklistDisplay/ColorPicklistDisplay.app` with the updated markup from Step 2
+**Replace placeholders:**
+- `{AppName}` → `LeadStatusDisplay`
+- `{FieldName}` → `Status`
+- `{FieldNameLower}` → `status`
+- `{FieldLabel}` → `Status`
+- `{ObjectName}` → `Lead`
 
-2. Create the Apex controller `force-app/main/default/classes/ColorPicklistDisplayController.cls` with the content from Step 3, including the metadata file `force-app/main/default/classes/ColorPicklistDisplayController.cls-meta.xml`
+### Example 2: Create an Account Type Picklist Display App
+```bash
+sf lightning generate app --name AccountTypeDisplay --output-dir force-app/main/default/aura
+```
 
-3. Deploy the application:
+**Replace placeholders:**
+- `{AppName}` → `AccountTypeDisplay`
+- `{FieldName}` → `Type`
+- `{FieldNameLower}` → `type`
+- `{FieldLabel}` → `Type`
+- `{ObjectName}` → `Account`
+
+### Example 3: Create a Lead Color Custom Field Picklist Display App
+```bash
+sf lightning generate app --name LeadColorDisplay --output-dir force-app/main/default/aura
+```
+
+**Replace placeholders:**
+- `{AppName}` → `LeadColorDisplay`
+- `{FieldName}` → `Color__c`
+- `{FieldNameWithoutCustom}` → `Color` (remove `__c` for method names)
+- `{FieldNameLower}` → `color`
+- `{FieldLabel}` → `Color`
+- `{ObjectName}` → `Lead`
+
+**Special Note for Custom Fields**: For custom fields ending with `__c`, the Apex method name and JavaScript function names should use `{FieldNameWithoutCustom}` (without the `__c` suffix), but the field reference in Apex should still use the full `{FieldName}` with `__c`.
+
+### Complete Implementation Steps
+1. Edit `force-app/main/default/aura/{AppName}/{AppName}.app` with the updated markup from Step 2 (replace all placeholders)
+2. Edit `force-app/main/default/aura/{AppName}/{AppName}Controller.js` with the updated JavaScript from Step 3 (replace all placeholders)
+3. Create the Apex controller `force-app/main/default/classes/{AppName}Controller.cls` with the content from Step 6 (replace all placeholders)
+4. Create the metadata file `force-app/main/default/classes/{AppName}Controller.cls-meta.xml` with the content from Step 6
+5. Deploy the application:
 ```bash
 sf project deploy start --manifest /Users/niawjunior/Desktop/salesforce-app/innovation-lab/manifest/package.xml
 ```
 
 ### How to Use the Component
 To use this component in a page or console:
-1. **In a Lightning Page**: Drag and drop the `ColorPicklistDisplay` component onto a Lightning page
-2. **In Developer Console**: 
+1. **In a Lightning Page**: Drag and drop the `{AppName}` component onto a Lightning page
+2. **In Developer Console**:
    - Go to Setup → Lightning Components
-   - Click "Preview" for the `ColorPicklistDisplay` component
+   - Click "Preview" for the `{AppName}` component
 
 ### Important Notes
-- This documentation uses "ColorPicklistDisplay" as an example application name
-- The actual implementation can be used with any application name by replacing `{AppName}` with your desired name
-- The field reference in the Apex class should be updated to match your specific object and field (e.g., `Lead.Color__c`)
-- The documentation provides a template that can be adapted for any picklist field, not just color fields
-- All instances of `{AppName}` and `{FieldName}` should be replaced with actual values when implementing
+- This documentation provides a generic template that can be adapted for ANY picklist field
+- Replace ALL placeholders with your specific values before implementation
+- The field reference in the Apex class should be updated to match your specific object and field (e.g., `Lead.Color__c`, `Account.Type`, `Opportunity.Status`)
+- **CRITICAL**: The `.app` file MUST include the `controller` attribute in the `<aura:application>` tag to connect to the Apex controller
+- **CRITICAL**: Attribute names in the markup must match exactly with those used in the JavaScript controller (e.g., `v.statusOptions` in markup must match `component.set("v.statusOptions", ...)` in controller)
 
 ## Troubleshooting
-If you only see the heading "Color Picker" and no other content:
-1. Check that the Apex controller method `getColorPicklistValues` is properly implemented
-2. Check browser console for JavaScript errors
-3. Ensure the component has proper permissions to access the object and field
-4. Make sure the component is properly deployed to your org
+If you only see the heading and no other content:
+1. **Check that the Apex controller method is properly implemented** - The method name in the JavaScript controller must exactly match the method name in the Apex class
+2. **Verify the controller reference** - Ensure the `.app` file includes `controller="{AppName}Controller"` in the `<aura:application>` tag
+3. **Check attribute name consistency** - Ensure attribute names used in the component markup match exactly with those referenced in the controller
+4. **Check browser console for JavaScript errors**
+5. **Ensure the component has proper permissions to access the object and field**
+6. **Make sure the component is properly deployed to your org**
 
-### Example of a Simplified Apex Controller Implementation
-```apex
-public with sharing class ColorPicklistDisplayController {
-    
-    @AuraEnabled
-    public static List<String> getColorPicklistValues() {
-        try {
-            // Replace 'ObjectName.FieldName' with your actual object and field
-            // For example: Schema.DescribeFieldResult fieldResult = Account.Type.getDescribe();
-            // Or for Lead Color__c: Schema.DescribeFieldResult fieldResult = Lead.Color__c.getDescribe();
-            Schema.DescribeFieldResult fieldResult = ObjectName.FieldName.getDescribe(); // Change this line for your field
-            List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
-            List<String> options = new List<String>();
+### Common Error: "Unable to find action 'methodName' on the controller"
+This error occurs when:
+1. The `.app` file doesn't include the `controller` attribute
+2. The Apex method name doesn't match what's being called in JavaScript
+3. The Apex class isn't properly deployed or has compilation errors
 
-            for (Schema.PicklistEntry entry : picklistValues) {
-                if (entry.isActive()) {
-                    options.add(entry.getValue());
-                }
-            }
+### Special Issue: Custom Field Names with __c Suffix
+**Problem**: Apex method names cannot contain double underscores (`__c`), which causes deployment failures.
 
-            return options;
-        } catch (Exception e) {
-            throw new AuraHandledException('Error fetching color picklist values: ' + e.getMessage());
-        }
-    }
-}
+**Solution**:
+- For custom fields like `Color__c`, use `{FieldNameWithoutCustom}` placeholder in Apex method names
+- Apex method: `getColorPicklistValues()` (NOT `getColor__cPicklistValues()`)
+- JavaScript call: `component.get("c.getColorPicklistValues")` (NOT `c.getColor__cPicklistValues()`)
+- JavaScript function: `selectColor()` (NOT `selectColor__c()`)
+- Field reference in Apex: Still use full field name `Lead.Color__c.getDescribe()`
+
+**Example for Color__c field:**
+- `{FieldName}` → `Color__c`
+- `{FieldNameWithoutCustom}` → `Color` (used in method names)
+- `{FieldNameLower}` → `color` (used in attribute names)
 
 ## Best Practices
 1. Always validate that the field exists on the object before referencing it
@@ -265,7 +360,7 @@ public with sharing class ColorPicklistDisplayController {
 6. Test the component in a sandbox or developer org first
 7. Consider using Lightning Data Service for better performance
 8. **Avoid inline styles in Aura components** to prevent syntax errors. Instead, use CSS classes with dynamic class names when needed (e.g., `<div class="{!'my-class color-' + v.colorValue}">`) to apply dynamic styling.
-   
+
    For dynamic colors or backgrounds, create CSS classes in the component's CSS file and use dynamic class binding:
 
    ```
@@ -276,7 +371,7 @@ public with sharing class ColorPicklistDisplayController {
    <div class="color-indicator {!'bg-' + v.selectedColor}"></div>
    ```
 
-10. **Avoid JavaScript method calls in Aura expressions** like `toLowerCase()`, `toUpperCase()`, etc. These are not supported in Aura expressions. Instead, transform strings in the controller or helper and bind the transformed values to component attributes.
+9. **Avoid JavaScript method calls in Aura expressions** like `toLowerCase()`, `toUpperCase()`, etc. These are not supported in Aura expressions. Instead, transform strings in the controller or helper and bind the transformed values to component attributes.
 10. **Always include metadata files for Apex classes** - Every Apex class must have a corresponding `.cls-meta.xml` file in the same directory with proper XML structure to prevent "File not found" errors during deployment.
 11. **Use `event.currentTarget` instead of `event.getSource()`** when handling events on buttons or other elements in Aura components. The `getSource()` method isn't available on button elements in the same way it is on other components. When using `onclick` handlers on buttons, always use `event.currentTarget.getAttribute("data-color")` to access the clicked element's attributes.
 12. **Remove unnecessary attributes and logic** - For simpler implementations, remove all object-specific attributes and logic to reduce complexity and potential errors.
@@ -297,6 +392,7 @@ public with sharing class ColorPicklistDisplayController {
 7. **Init Attribute Error**: Avoid using `init="{!c.doInit}"` in the application markup if you're experiencing issues. Instead, use `init="{!c.doInit}"` but ensure the controller method is properly implemented.
 8. **Component Structure Issues**: For simpler implementations, remove all object-specific attributes and logic to reduce complexity and potential errors.
 9. **Attribute Name Mismatch Error**: Ensure that attribute names used in the component markup match exactly with those referenced in the controller and helper. For example, if the markup uses `v.picklistOptions`, make sure the controller sets `v.picklistOptions` and not `v.colorOptions` or any other variation. This is critical for proper data binding and component functionality.
+10. **Missing Controller Reference Error**: The `.app` file MUST include `controller="{AppName}Controller"` in the `<aura:application>` tag. Without this, the JavaScript controller cannot find the Apex methods.
 
 ## Testing and Validation
 Before deployment, it's important to validate your Aura application:

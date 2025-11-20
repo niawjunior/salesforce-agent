@@ -5,7 +5,9 @@
       "Bash(cat:*)",
       "Bash(sf project deploy start:*)",
       "Bash(sed:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(sf project retrieve start:*)"
     ],
     "deny": [],
     "ask": []
