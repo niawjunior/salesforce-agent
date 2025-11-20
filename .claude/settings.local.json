@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sf lightning generate:*)",
+      "Bash(cat:*)",
+      "Bash(sf project deploy start:*)",
+      "Bash(sed:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

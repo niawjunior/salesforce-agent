@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Retrieve only the Account and Lead objects -->
+    <types>
+        <members>Account</members>
+        <members>Lead</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomField</name>
+    </types>
+
+    <!-- Retrieve all Permission Sets -->
+    <types>
+        <members>*</members>
+        <name>PermissionSet</name>
+    </types>
+
+    <!-- Include Aura Application -->
+    <types>
+        <members>*</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+
+    <!-- Include Apex Controller -->
+    <types>
+        <members>*</members>
+        <name>ApexClass</name>
+    </types>
+
+    <version>65.0</version>
+</Package>
