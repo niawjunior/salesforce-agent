@@ -1,17 +1,17 @@
-# Create Custom Field for Salesforce Lead Object
+# Create Custom Field for Salesforce Objects
 
 ## Overview
-This instruction defines the process for creating a new custom field for the Lead object in Salesforce using the standard metadata format.
+This instruction defines the process for creating a new custom field for any Salesforce object (Lead, Account, Opportunity, etc.) using the standard metadata format.
 
 ## Requirements
-1. Create a new custom field for the Lead object
+1. Create a new custom field for the specified object
 2. Place the field file in the correct directory structure
 3. Follow Salesforce standard metadata XML format
 4. Apply specific formatting rules
 5. New field must be added to the package.xml
 
 ## File Structure
-- **Location**: `force-app/main/default/objects/Lead/fields/`
+- **Location**: `force-app/main/default/objects/{ObjectName}/fields/`
 - **File Naming Convention**: `{FieldName}__c.field-meta.xml`
 - **Full Field Name Format**: `{FieldName}__c`
 
@@ -24,8 +24,8 @@ Use the following XML structure as a base:
     <fullName>{FieldName}__c</fullName>
     <externalId>false</externalId>
     <label>{FieldName}</label>
-    <length>50</length>
-    <required>true</required>
+    <length>{Length}</length>
+    <required>{Required}</required>
     <trackFeedHistory>false</trackFeedHistory>
     <type>Text</type>
     <unique>false</unique>
@@ -34,13 +34,13 @@ Use the following XML structure as a base:
 
 ## Specific Requirements
 1. **Field Name**: Replace `{FieldName}` with the actual field name (e.g., `TestField`)
-2. **Length**: Always set to `50` (as per requirement)
-3. **Required**: Always set to `true` (as per requirement)
+2. **Length**: Set to the desired length (e.g., `30`, `50`, `255`, etc.)
+3. **Required**: Set to `true` or `false` based on your requirements
 4. **Type**: Default to `Text` unless specified otherwise
 5. **Label**: Should match the field name without the `__c` suffix
 
 ## Example Implementation
-For a field named "TestField", the resulting file should be:
+For a field named "TestField" with length 30 and required set to false on the Lead object, the resulting file should be:
 - **File Path**: `force-app/main/default/objects/Lead/fields/TestField__c.field-meta.xml`
 - **Content**:
 ```xml
@@ -49,13 +49,56 @@ For a field named "TestField", the resulting file should be:
     <fullName>TestField__c</fullName>
     <externalId>false</externalId>
     <label>TestField</label>
-    <length>50</length>
+    <length>30</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
+```
+
+### Additional Examples
+
+**Example 1: Required field with length 100 on Account object**
+- **File Path**: `force-app/main/default/objects/Account/fields/Priority__c.field-meta.xml`
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Priority__c</fullName>
+    <externalId>false</externalId>
+    <label>Priority</label>
+    <length>100</length>
     <required>true</required>
     <trackFeedHistory>false</trackFeedHistory>
     <type>Text</type>
     <unique>false</unique>
 </CustomField>
 ```
+
+**Example 2: Optional field with length 255 on Opportunity object**
+- **File Path**: `force-app/main/default/objects/Opportunity/fields/CustomNotes__c.field-meta.xml`
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CustomNotes__c</fullName>
+    <externalId>false</externalId>
+    <label>Custom Notes</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
+```
+
+### Supported Objects
+This template works with standard Salesforce objects including:
+- Lead
+- Account
+- Opportunity
+- Contact
+- Case
+- And any other standard or custom object
 
 ## Best Practices
 1. Always validate the field name follows Salesforce naming conventions
