@@ -61,111 +61,17 @@ Use the following XML structure as a base:
 ## Example Implementation
 For a field named "Status" with values "New", "Contacted", and "Converted" on the Lead object, the resulting file should be:
 - **File Path**: `force-app/main/default/objects/Lead/fields/Status__c.field-meta.xml`
-- **Content**:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Status__c</fullName>
-    <externalId>false</externalId>
-    <label>Status</label>
-    <required>false</required>
-    <trackFeedHistory>false</trackFeedHistory>
-    <type>Picklist</type>
-    <valueSet>
-        <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>New</fullName>
-                <default>false</default>
-                <label>New</label>
-            </value>
-            <value>
-                <fullName>Contacted</fullName>
-                <default>false</default>
-                <label>Contacted</label>
-            </value>
-            <value>
-                <fullName>Converted</fullName>
-                <default>false</default>
-                <label>Converted</label>
-            </value>
-        </valueSetDefinition>
-    </valueSet>
-</CustomField>
-```
+- **Content**: See @.claude/commands/examples/picklist-field-basic-example.xml
 
 ### Additional Examples
 
 **Example 1: Required priority field on Account object**
 - **File Path**: `force-app/main/default/objects/Account/fields/Priority__c.field-meta.xml`
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Priority__c</fullName>
-    <externalId>false</externalId>
-    <label>Priority</label>
-    <required>true</required>
-    <trackFeedHistory>false</trackFeedHistory>
-    <type>Picklist</type>
-    <valueSet>
-        <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>High</fullName>
-                <default>false</default>
-                <label>High</label>
-            </value>
-            <value>
-                <fullName>Medium</fullName>
-                <default>true</default>
-                <label>Medium</label>
-            </value>
-            <value>
-                <fullName>Low</fullName>
-                <default>false</default>
-                <label>Low</label>
-            </value>
-        </valueSetDefinition>
-    </valueSet>
-</CustomField>
-```
+- **Content**: See @.claude/commands/examples/picklist-field-required-example.xml
 
 **Example 2: Optional category field on Opportunity object**
 - **File Path**: `force-app/main/default/objects/Opportunity/fields/Category__c.field-meta.xml`
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Category__c</fullName>
-    <externalId>false</externalId>
-    <label>Category</label>
-    <required>false</required>
-    <trackFeedHistory>false</trackFeedHistory>
-    <type>Picklist</type>
-    <valueSet>
-        <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>true</sorted>
-            <value>
-                <fullName>Existing Customer</fullName>
-                <default>false</default>
-                <label>Existing Customer</label>
-            </value>
-            <value>
-                <fullName>New Customer</fullName>
-                <default>false</default>
-                <label>New Customer</label>
-            </value>
-            <value>
-                <fullName>Partner</fullName>
-                <default>false</default>
-                <label>Partner</label>
-            </value>
-        </valueSetDefinition>
-    </valueSet>
-</CustomField>
-```
+- **Content**: See @.claude/commands/examples/picklist-field-sorted-example.xml
 
 ### Supported Objects
 This template works with standard Salesforce objects including:

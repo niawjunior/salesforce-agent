@@ -42,54 +42,17 @@ Use the following XML structure as a base:
 ## Example Implementation
 For a field named "TestField" with length 30 and required set to false on the Lead object, the resulting file should be:
 - **File Path**: `force-app/main/default/objects/Lead/fields/TestField__c.field-meta.xml`
-- **Content**:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>TestField__c</fullName>
-    <externalId>false</externalId>
-    <label>TestField</label>
-    <length>30</length>
-    <required>false</required>
-    <trackFeedHistory>false</trackFeedHistory>
-    <type>Text</type>
-    <unique>false</unique>
-</CustomField>
-```
+- **Content**: See @.claude/commands/examples/text-field-basic-example.xml
 
 ### Additional Examples
 
 **Example 1: Required field with length 100 on Account object**
 - **File Path**: `force-app/main/default/objects/Account/fields/Priority__c.field-meta.xml`
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Priority__c</fullName>
-    <externalId>false</externalId>
-    <label>Priority</label>
-    <length>100</length>
-    <required>true</required>
-    <trackFeedHistory>false</trackFeedHistory>
-    <type>Text</type>
-    <unique>false</unique>
-</CustomField>
-```
+- **Content**: See @.claude/commands/examples/text-field-required-example.xml
 
 **Example 2: Optional field with length 255 on Opportunity object**
 - **File Path**: `force-app/main/default/objects/Opportunity/fields/CustomNotes__c.field-meta.xml`
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>CustomNotes__c</fullName>
-    <externalId>false</externalId>
-    <label>Custom Notes</label>
-    <length>255</length>
-    <required>false</required>
-    <trackFeedHistory>false</trackFeedHistory>
-    <type>Text</type>
-    <unique>false</unique>
-</CustomField>
-```
+- **Content**: See @.claude/commands/examples/text-field-optional-example.xml
 
 ### Supported Objects
 This template works with standard Salesforce objects including:

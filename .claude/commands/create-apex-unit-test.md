@@ -18,72 +18,7 @@ Please provide:
 ## Test Template Structure
 
 ### Basic Test Class Template
-```apex
-@isTest
-private class {ApexClassName}Test {
-
-    @isTest
-    static void testGet{FieldName}PicklistValues_Success() {
-        Test.startTest();
-        try {
-            List<String> result = {ApexClassName}.get{FieldNameWithoutCustom}PicklistValues();
-            
-            // Assert that results are not null
-            System.assertNotEquals(null, result, 'Result should not be null');
-            
-            // Assert that results are not empty (assuming field has values)
-            System.assert(!result.isEmpty(), 'Result should not be empty');
-            
-            // Assert that each result is not null or empty
-            for(String value : result) {
-                System.assert(!String.isBlank(value), 'Picklist values should not be blank');
-            }
-            
-        } catch (Exception e) {
-            System.assert(false, 'Unexpected exception: ' + e.getMessage());
-        }
-        Test.stopTest();
-    }
-    
-    @isTest
-    static void testGet{FieldName}PicklistValues_ErrorHandling() {
-        Test.startTest();
-        try {
-            // This test would need to be adapted based on your specific error scenarios
-            // For now, we'll just verify the method runs without unexpected exceptions
-            
-            List<String> result = {ApexClassName}.get{FieldNameWithoutCustom}PicklistValues();
-            
-            // Basic assertion - the method should complete successfully
-            System.assertNotEquals(null, result, 'Method should return a result');
-            
-        } catch (AuraHandledException e) {
-            // Expected behavior - AuraHandledException should be caught and handled
-            System.assert(true, 'AuraHandledException caught as expected: ' + e.getMessage());
-        } catch (Exception e) {
-            System.assert(false, 'Unexpected exception type: ' + e.getTypeName() + ' - ' + e.getMessage());
-        }
-        Test.stopTest();
-    }
-    
-    @isTest
-    static void testGet{FieldName}PicklistValues_FieldAccessibility() {
-        Test.startTest();
-        
-        // Test that the field is accessible
-        try {
-            Schema.DescribeFieldResult fieldResult = {ObjectName}.{FieldName}.getDescribe();
-            System.assertNotEquals(null, fieldResult, 'Field should be accessible');
-            System.assert(fieldResult.isAccessible(), 'Field should be accessible to current user');
-            
-        } catch (Exception e) {
-            System.assert(false, 'Field accessibility test failed: ' + e.getMessage());
-        }
-        
-        Test.stopTest();
-    }
-}
-```
+See @.claude/commands/examples/apex-test-basic-template.cls for the complete test class template.
 
 ## Test Data Requirements
 
@@ -119,11 +54,43 @@ Generated test class name: `LeadColorDisplayControllerTest`
 
 Generated test class name: `GenderIdentityDisplayControllerTest`
 
-## Running the Tests
+## Deployment with Tests
 
-### Execute Tests via CLI
+### Important: Deploy Tests Before Running
+**Test classes must be deployed to your org before you can run them.** The deployment process makes the test class available in your Salesforce environment.
+
+### Update Package.xml
+Ensure your test class is included in package.xml:
+See @.claude/commands/examples/package-xml-example.xml for the XML structure.
+
+### Step 1: Deploy Test Classes
 ```bash
-sf apex run test --class {ApexClassName}Test
+sf project deploy start --manifest path/to/package.xml
+```
+
+### Step 2: Run Tests After Deployment
+
+**Option A: Synchronous Execution (Wait for Results)**
+```bash
+sf apex run test --class-names {ApexClassName}Test --synchronous
+```
+
+**Option B: Asynchronous Execution (Retrieve Results Later)**
+```bash
+# Run tests asynchronously
+sf apex run test --class-names {ApexClassName}Test
+
+# Retrieve results using the test run ID provided
+sf apex get test -i {TestRunId} -o {Username}
+```
+
+**Option C: Run All Tests with Coverage Report**
+```bash
+# Run all tests with code coverage
+sf apex run test --code-coverage
+
+# Retrieve results using the test run ID provided
+sf apex get test -i {TestRunId} -o {Username}
 ```
 
 ### Execute Tests via Developer Console
@@ -132,16 +99,22 @@ sf apex run test --class {ApexClassName}Test
 3. Enter test class name
 4. Click "Run"
 
-## Deployment with Tests
+### Understanding Test Results
+When running tests asynchronously (without `--synchronous`), you'll receive a test run ID. Use this ID to retrieve results:
 
-### Update Package.xml
-Ensure your test class is included in package.xml:
-```xml
-<types>
-    <members>{ApexClassName}Test</members>
-    <name>ApexClass</name>
-</types>
+```bash
+# Example output after running tests
+Run "sf apex get test -i 707Qy00000myk1G -o psb@wise-koala-tg9v5t.com" to retrieve test results
+
+# Retrieve the results
+sf apex get test -i 707Qy00000myk1G -o psb@wise-koala-tg9v5t.com
 ```
+
+The test results include:
+- Test outcome (Pass/Fail)
+- Pass rate and execution time
+- Individual test method results
+- Code coverage metrics (when using --code-coverage)
 
 ### Deploy with Test Execution
 ```bash
@@ -173,36 +146,7 @@ sf project deploy start --manifest path/to/package.xml --test-level RunLocalTest
 ## Advanced Testing Techniques
 
 ### Mocking and Test Context
-```apex
-@isTest
-private class {ApexClassName}Test {
-
-    // Test data factory method
-    private static {ObjectName} createTestRecord() {
-        {ObjectName} testObj = new {ObjectName}();
-        testObj.Name = 'Test Record';
-        testObj.{FieldName} = 'Test Value';
-        return testObj;
-    }
-    
-    @isTest
-    static void testWithTestContext() {
-        Test.startTest();
-        
-        // Insert test data if needed
-        {ObjectName} testRecord = createTestRecord();
-        // insert testRecord;
-        
-        // Test your method
-        List<String> result = {ApexClassName}.get{FieldNameWithoutCustom}PicklistValues();
-        
-        // Assertions
-        System.assertNotEquals(null, result);
-        
-        Test.stopTest();
-    }
-}
-```
+See @.claude/commands/examples/apex-test-advanced-template.cls for advanced testing techniques with test data factory methods.
 
 ## Troubleshooting Test Failures
 
@@ -222,11 +166,15 @@ private class {ApexClassName}Test {
 
 ### Automated Testing
 ```bash
-# Run all tests
-sf apex run test --code-coverage
+# Run all tests (synchronous)
+sf apex run test --code-coverage --synchronous
 
-# Run specific test class
-sf apex run test --class {ApexClassName}Test --code-coverage
+# Run all tests (asynchronous - retrieve results later)
+sf apex run test --code-coverage
+sf apex get test -i {TestRunId} -o {Username}
+
+# Run specific test class (synchronous)
+sf apex run test --class-names {ApexClassName}Test --code-coverage --synchronous
 
 # Generate coverage report
 sf apex run test --code-coverage --output-dir coverage-reports
@@ -252,6 +200,7 @@ sf apex run test --code-coverage --output-dir coverage-reports
 After generating your test class:
 1. Review and customize the generated test methods
 2. Add any additional test scenarios specific to your use case
-3. Run tests to verify they pass
-4. Check code coverage meets requirements
-5. Deploy with tests to ensure production readiness
+3. **Deploy the test class first** using `sf project deploy start`
+4. Run tests to verify they pass using `sf apex run test --class-names {ClassName}Test --synchronous`
+5. Check code coverage meets requirements
+6. Deploy with tests to ensure production readiness
